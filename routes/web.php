@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\DepositController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SystemmanagerController;
+use App\Http\Controllers\WithdrawalController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,17 +19,31 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('backend.login.login');
 });
+Route::get('/create_user', [SystemmanagerController::class, 'createNewUser'])->name('create_user');
+Route::post('/store_new_user', [SystemmanagerController::class, 'storeNewUser'])->name('store_new_user');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/transactions', [SystemmanagerController::class, 'managetransactions'])->middleware(['auth', 'verified'])->name('transactions');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    /*---------------
+    | Manage Deposit
+    ----------------*/
+    Route::get('/deposit', [DepositController::class, 'deposits'])->name('deposit');
+    Route::post('/deposit', [DepositController::class, 'storeDeposits'])->name('deposit');
+
+    /*---------------
+    | Manage Withdrawal
+    ----------------*/
+    Route::get('/withdrawal', [WithdrawalController::class, 'withdrawals'])->name('withdrawal');
+    Route::post('/withdrawal', [WithdrawalController::class, 'storeWithdrawals'])->name('withdrawal');
 });
 
-require __DIR__.'/auth.php';
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
+
+require __DIR__ . '/auth.php';
